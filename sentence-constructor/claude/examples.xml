@@ -1,0 +1,225 @@
+<examples>
+    <example>
+        <teacher-instructions>
+            ## Role
+
+            Japanese Language Teacher
+
+            ## Language Level
+
+            Beginner, JLPT5
+
+            ## Teaching Instructions
+
+            - Student will provide an english sentence
+            - His expectation is to covert this sentence into japanse sentence
+            - Student need Vocabulary table which will contains engilish, japanse, romaji
+            - Student will need sentence constructor pattern, so that he can easily construct sentence in japanse
+            - Don't repeat words in Vocabulary table
+            - Please provide consideration and next steps
+            - Please include pronouns, verb and adjective in sentence constructions
+            - Please provide different verb conjugations for correcting grammer pattern
+            - Please provide step by step information for sentence constuction
+        </teacher-instructions>
+        <student-input>
+            The lights are still on, did you forget to turn them off?
+        </student-input>
+        <output>
+            <text>
+                # Japanese Sentence Translation Lesson
+
+                ## Vocabulary Table
+
+                | English | Japanese | Romaji |
+                |---------|----------|--------|
+                | light | 電気 | denki |
+                | still | まだ | mada |
+                | on | 付いている | tsuite iru |
+                | you | あなた | anata |
+                | forget | 忘れる | wasureru |
+                | turn off | 消す | kesu |
+                | them | それ | sore |
+
+                ## Sentence Construction Pattern
+
+                ### Basic Sentence Structure
+                1. Subject + は/が + Object + Verb
+                2. Verb conjugation depends on politeness and tense
+
+                ### Question Formation
+                - Add か (ka) at the end of the sentence
+                - Use rising intonation
+
+                ## Sentence Translation
+
+                ### Original Sentence
+                "The lights are still on, did you forget to turn them off?"
+
+                ### Japanese Translation
+                電気はまだ付いていますが、消すのを忘れましたか？
+                (Denki wa mada tsuite imasu ga, kesu no wo wasuremashita ka?)
+
+                ## Verb Conjugations
+
+                ### Verb: 忘れる (Wasureru - To Forget)
+                - Informal Present: 忘れる (wasureru)
+                - Formal Present: 忘れます (wasureimasu)
+                - Informal Past: 忘れた (wakashita)
+                - Formal Past: 忘れました (wasureimashita)
+
+                ### Verb: 消す (Kesu - To Turn Off)
+                - Informal Present: 消す (kesu)
+                - Formal Present: 消します (keshimasu)
+                - Informal Past: 消した (keshita)
+                - Formal Past: 消しました (keshimashita)
+
+                ## Grammatical Notes
+                - は (wa) marks the topic of the sentence
+                - まだ (mada) means "still"
+                - が (ga) can mark the subject
+                - の (no) is used to nominalize verbs
+                - を (wo) marks the direct object
+
+                ## Learning Steps
+                1. Learn vocabulary
+                2. Understand sentence structure
+                3. Practice verb conjugations
+                4. Create similar sentences
+                5. Practice pronunciation
+            </text>
+            <score>
+                8
+            </score>
+            <score-reason>
+                Good:- It captured prononus in first cut
+                Good:- It has also provided the question formation
+                Good: Verb Conjugations is also good, explain meaning of different word conjution
+            </score-reason>
+        </output>
+    </example>
+
+    <example>
+        <teacher-instructions>
+            ## Role
+            Japanese Language Teacher
+
+            ## Language Level
+
+            Beginner, JLPT5
+
+            ## Teaching Instructions
+
+            - Student will provide an english sentence
+            - His expectation is to covert this sentence into japanse sentence
+            - Student need Vocabulary table which will contains engilish, japanse, romaji
+            - Student will need sentence constructor pattern, so that he can easily construct sentence in japanse
+            - Don't repeat words in Vocabulary table
+            - Please provide consideration and next steps
+            - Please include pronouns, verb and adjective in sentence constructions
+            - Please provide different verb conjugations for correcting grammer pattern
+            - Please provide step by step information for sentence constuction
+            - Help me to provide different sentence constuction example using verb, noun, adjective, prononus
+        </teacher-instructions>
+        <student-input>
+            The lights are still on, did you forget to turn them off?
+        </student-input>
+        <output>
+            <text>
+                # Japanese Sentence Translation Lesson
+                ## Vocabulary Table
+
+                | English | Japanese | Romaji |
+                |---------|----------|--------|
+                | light | 電気 | denki |
+                | still | まだ | mada |
+                | on | 付いている | tsuite iru |
+                | person | あなた | anata |
+                | forget | 忘れる | wasureru |
+                | turn off | 消す | kesu |
+                | thing | もの | mono |
+
+                ## Sentence Construction Patterns
+
+                ### 1. Basic Sentence Structures
+                - Noun + は/が + Verb
+                - Noun + Object + を + Verb
+                - Adjective + Noun
+                - Verb + Ending Particle
+
+                ### 2. Question Formation
+                - Add か (ka) at the end of the sentence
+                - Use rising intonation
+
+                ### 3. Verb Conjugation Examples
+
+                #### Verb: 忘れる (Wasureru - To Forget)
+                - Informal Present Positive: 忘れる (wasureru)
+                - Informal Present Negative: 忘れない (wasurenai)
+                - Formal Present Positive: 忘れます (wasureimasu)
+                - Formal Present Negative: 忘れません (wasurimasen)
+                - Informal Past Positive: 忘れた (wasurreta)
+                - Formal Past Positive: 忘れました (wasureimashita)
+
+                #### Verb: 消す (Kesu - To Turn Off)
+                - Informal Present Positive: 消す (kesu)
+                - Informal Present Negative: 消さない (kesanai)
+                - Formal Present Positive: 消します (keshimasu)
+                - Formal Present Negative: 消しません (keshimasen)
+                - Informal Past Positive: 消した (keshita)
+                - Formal Past Positive: 消しました (keshimashita)
+
+                ## Example Sentences with Different Constructions
+
+                ### 1. Noun + Verb
+                - 私は本を読む。(Watashi wa hon wo yomu.)
+                  - I read a book.
+
+                ### 2. Adjective + Noun
+                - 赤い車。(Akai kuruma.)
+                  - Red car.
+
+                ### 3. Question Sentence
+                - あなたは日本語を勉強していますか？(Anata wa nihongo wo benkyou shite imasu ka?)
+                  - Are you studying Japanese?
+
+                ## Original Sentence Translation
+
+                ### English:
+                "The lights are still on, did you forget to turn them off?"
+
+                ### Japanese:
+                電気はまだ付いていますが、消すのを忘れましたか？
+                (Denki wa mada tsuite imasu ga, kesu no wo wasuremashita ka?)
+
+                ## Learning Steps
+                1. Memorize basic vocabulary
+                2. Practice sentence structures
+                3. Learn verb conjugations
+                4. Create your own sentences
+                5. Practice pronunciation
+                6. Listen to native speakers
+
+                ## Grammatical Notes
+                - は (wa): Topic marker
+                - が (ga): Subject marker
+                - を (wo): Direct object marker
+                - の (no): Possessive or nominalizer
+                - まだ (mada): Still, not yet
+                - か (ka): Question marker
+
+                ## Practice Suggestions
+                - Write 5 original sentences using different patterns
+                - Practice verb conjugations
+                - Record yourself speaking
+                - Listen to Japanese conversations
+            </text>
+            <score>
+                10
+            </score>
+            <score-reason>
+                Good:- It captured the different sentence construction examples
+            </score-reason>
+        </output>
+    </example>
+
+</examples>
