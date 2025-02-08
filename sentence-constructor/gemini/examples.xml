@@ -125,6 +125,99 @@ Let me know if you'd like to try another sentence!  I'm here to help you learn.
             </score-reason>
         </output>
     </example>
+    <example>
+        <teacher-instructions>
+            ## Role
+        Japanese Language Teacher
+
+        ## Language Level
+
+        Beginner, JLPT5
+
+        ## Teaching Instructions
+
+        - Student will provide an english sentence
+        - His expectation is to covert this sentence into japanse sentence
+        - Student need Vocabulary table which will contains engilish, japanse, romaji
+        - Student will need sentence constructor pattern, so that he can easily construct sentence in japanse
+        - Don't repeat words in Vocabulary table
+        - Please provide consideration and next steps
+        - Please include pronouns, verb and adjective in sentence constructions
+        - Please include pronouns, verb and adjective in sentence constructions
+        - Please provide different verb conjugations for correcting grammer pattern
+        - Please provide step by step information for sentence constuction
+        - Help me to provide different sentence constuction example using verb, noun, adjective, prononus
+
+        Student Input :- The lights are still on, did you forget to turn them off?
+
+
+        </teacher-instructions>
+          <student-input>
+            The lights are still on, did you forget to turn them off?
+        </student-input>
+        <output>
+            <text>
+                    . Vocabulary Table:
+
+                    English |	Japanese|	Romaji
+                    lights	| 電気	| denki
+                    still |	まだ |	mada
+                    on	| ついている	 | tsuiteiru
+                    did you forget? | 	忘れましたか？ |	wasuremashita ka?
+                    to turn off | 	消す |	kesu
+                    them	| (implied)	| (implied)
+                    you	| あなた	| anata
+
+                    Export to Sheets
+                    2. Sentence Construction Patterns:
+
+                    Subject + は/が + Topic + Predicate: Basic sentence structure.
+                    Verb + ます/ました/ません/ませんでした + か？: Polite question form (present/past, affirmative/negative).
+                    ～て ください (te kudasai): Please do ~. (Not used in this translation, but useful to know).
+                    Noun + の (no): Nominalizer, turns a verb or adjective into a noun-like object.
+                    3. Step-by-Step Sentence Construction:
+
+                    "The lights are still on":  電気はまだついています (Denki wa mada tsuiteimasu)
+
+                    電気 (denki): Lights (subject, marked by は)
+                    まだ (mada): Still
+                    ついている (tsuiteiru): Are on (present continuous, from the verb つく tsuku - to turn on/be on)
+                    "Did you forget to turn them off?": あなたは消すのを忘れましたか？ (Anata wa kesu no o wasuremashita ka?)
+
+                    あなたは (anata wa): You (topic, marked by は)
+                    消すのを (kesu no o): Turning them off (消す kesu - to turn off, の no - nominalizer, を o - object marker)
+                    忘れましたか？ (wasuremashita ka?): Did you forget? (from 忘れる wasureru - to forget, past tense polite form ました mashita, question marker か ka)
+                    Putting it together: 電気はまだついています、あなたは消すのを忘れましたか？ (Denki wa mada tsuiteimasu, anata wa kesu no o wasuremashita ka?)
+
+                    4. Verb Conjugations (忘れる - wasureru - to forget):
+
+                    Present: 忘れます (wasuremasu) - I forget / You forget / He/She forgets / We forget / They forget
+                    Past: 忘れました (wasuremashita) - I forgot / You forgot / etc.
+                    Negative Present: 忘れません (wasuremasen) - I don't forget / You don't forget / etc.
+                    Negative Past: 忘れませでした (wasuremasen deshita) - I didn't forget / You didn't forget / etc.
+                    Te-form: 忘れて (wasurete) - For connecting clauses (e.g., 忘れてください - Please forget)
+                    5. Example Sentences with Different Constructions:
+
+                    Noun + Verb: 私は本を読みます。(Watashi wa hon o yomimasu.) - I read a book.
+                    Pronoun + Adjective: 彼は優しいです。(Kare wa yasashii desu.) - He is kind.
+                    Verb + Noun: 食べるのが好きです。(Taberu no ga suki desu.) - I like eating. (Here, "taberu" becomes a noun-like object with "no ga")
+                    Adjective + Noun: 新しい車が欲しいです。(Atarashii kuruma ga hoshii desu.) - I want a new car.
+                    Pronoun + Verb + Object: 彼女に花をあげました。(Kanojo ni hana o agemashita.) - I gave her flowers.
+                    6. Considerations and Next Steps:
+
+                    Natural Speech: In casual conversation, the topic marker は (wa) is often omitted. So, you might hear 電気まだついてる？忘れちゃった？ (Denki mada tsuiteru? Wasurechatta?) - Lights are still on? Did you forget? (More casual)
+                    Politeness Levels: The "ます" form is generally polite. There are even more polite forms (e.g., ～です desu/～ます masu) and more casual forms.
+                    Practice: Practice saying the sentence aloud and writing it. Try changing the tense or adding other details. The best way to learn is through consistent practice.
+                    Let me know if you have another sentence or want to explore other grammar points!  I'm here to help.
+                 </text>
+                    <score>
+                        8
+                    </score>
+                    <score-reason>
+                        Good: Proper Vocab and consideration steps
+                    </score-reason>
+        </output>
+    </example>
 </examples>
 
 
