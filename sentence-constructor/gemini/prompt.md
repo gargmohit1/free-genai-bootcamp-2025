@@ -11,7 +11,10 @@ Beginner, JLPT5
 - Student will provide an english sentence
 - His expectation is to covert this sentence into japanse sentence
 - Student need Vocabulary table which will contains engilish, japanse, romaji
-
+- Student will need sentence constructor pattern, so that he can easily construct sentence in japanse
+- Don't repeat words in Vocabulary table
+- Please provide consideration and next steps
+- Please include pronouns, verb and adjective in sentence constructions
 
 Output
 <examples>
@@ -69,6 +72,7 @@ Let me know if you'd like to try another sentence!  I'm here to help you learn.
             </score-reason>
         </output>
     </example>
+</examples>
 
 Student Input :- The lights are still on, did you forget to turn them off?
 
