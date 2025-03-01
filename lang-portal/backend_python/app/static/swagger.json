@@ -1,67 +1,700 @@
 {
   "openapi": "3.0.0",
   "info": {
+    "version": "1.0.0",
     "title": "Language Learning Portal API",
-    "description": "API for managing Japanese vocabulary and study sessions",
-    "version": "1.0.0"
+    "description": "API documentation for the Language Learning Portal"
   },
-  "servers": [
-    {
-      "url": "http://localhost:5001",
-      "description": "Development server"
-    }
-  ],
   "paths": {
-    "/api/words": {
+    "/api/dashboard/last_study_session": {
       "get": {
-        "summary": "Get paginated list of words",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1,
-              "minimum": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "Items per page",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10,
-              "minimum": 1
-            }
-          }
-        ],
+        "summary": "Return last study session details.",
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "Details of the last study session",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Word"
-                      }
+                    "status": {
+                      "type": "string"
                     },
-                    "meta": {
+                    "data": {
                       "type": "object",
                       "properties": {
-                        "page": {"type": "integer"},
-                        "per_page": {"type": "integer"},
-                        "total_count": {"type": "integer"},
-                        "total_pages": {"type": "integer"}
+                        "session_id": {
+                          "type": "integer"
+                        },
+                        "group_id": {
+                          "type": "integer"
+                        },
+                        "study_activity_id": {
+                          "type": "integer"
+                        },
+                        "correct_words": {
+                          "type": "integer"
+                        },
+                        "incorrect_words": {
+                          "type": "integer"
+                        }
                       }
                     }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No study session found"
+          }
+        }
+      }
+    },
+    "/api/dashboard/study_progress": {
+      "get": {
+        "summary": "Return current study progress.",
+        "responses": {
+          "200": {
+            "description": "Current study progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "studied_words": {
+                          "type": "integer"
+                        },
+                        "total_words": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/quick_stats": {
+      "get": {
+        "summary": "Return quick statistics.",
+        "responses": {
+          "200": {
+            "description": "Quick statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "active_groups": {
+                          "type": "integer"
+                        },
+                        "total_sessions": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/study_sessions/{id}": {
+      "get": {
+        "summary": "Retrieve details of a specific study session.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the study session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "session_id": {
+                          "type": "integer"
+                        },
+                        "group_id": {
+                          "type": "integer"
+                        },
+                        "study_activity_id": {
+                          "type": "integer"
+                        },
+                        "start_time": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "end_time": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "reviews": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/StudyReview"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Study session not found"
+          }
+        }
+      }
+    },
+    "/api/study_sessions": {
+      "get": {
+        "summary": "Retrieve a list of all study sessions.",
+        "responses": {
+          "200": {
+            "description": "List of study sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StudySession"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a new study session.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "group_id": {
+                    "type": "integer"
+                  },
+                  "study_activity_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "group_id",
+                  "study_activity_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Study session created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "session_id": {
+                          "type": "integer"
+                        },
+                        "group_id": {
+                          "type": "integer"
+                        },
+                        "study_activity_id": {
+                          "type": "integer"
+                        },
+                        "start_time": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/api/study_sessions/{id}/review": {
+      "post": {
+        "summary": "Records word reviews for a session.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reviews": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "word_id": {
+                          "type": "integer"
+                        },
+                        "correct": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "word_id",
+                        "correct"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "reviews"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Word reviews recorded successfully"
+          },
+          "400": {
+            "description": "Invalid session data"
+          }
+        }
+      }
+    },
+    "/api/study_activities": {
+      "get": {
+        "summary": "Retrieve a paginated list of study activities",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of study activities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StudyActivity"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new study activity",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudyActivity"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Study activity created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyActivity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/api/study_activities/{activity_id}": {
+      "get": {
+        "summary": "Retrieve a specific study activity by ID",
+        "parameters": [
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Study activity details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyActivity"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Study activity not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing study activity",
+        "parameters": [
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "activity",
+            "in": "body",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyActivity"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Study activity updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudyActivity"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Study activity not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a study activity by its ID",
+        "parameters": [
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Study activity deleted"
+          },
+          "404": {
+            "description": "Study activity not found"
+          }
+        }
+      }
+    },
+    "/api/groups": {
+      "get": {
+        "summary": "Retrieve a paginated list of groups",
+        "responses": {
+          "200": {
+            "description": "A list of groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Group"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new group",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Group"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Group created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/groups/{id}": {
+      "get": {
+        "summary": "Retrieve a specific group by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "group",
+            "in": "body",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group deleted"
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        }
+      }
+    },
+    "/api/groups/{id}/words": {
+      "post": {
+        "summary": "Add a word to a group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "word_id",
+            "in": "body",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "word_id": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Word added to group"
+          },
+          "400": {
+            "description": "Word ID is required"
+          }
+        }
+      },
+      "get": {
+        "summary": "Retrieve words in a specific group",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of words in the group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/words": {
+      "get": {
+        "summary": "Retrieve a paginated list of words",
+        "responses": {
+          "200": {
+            "description": "A list of words",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Word"
                   }
                 }
               }
@@ -76,44 +709,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WordInput"
+                "$ref": "#/components/schemas/Word"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Word created successfully",
+            "description": "Word created",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Word"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/Word"
                 }
               }
             }
@@ -123,7 +730,7 @@
     },
     "/api/words/{word_id}": {
       "get": {
-        "summary": "Get a word by ID",
+        "summary": "Retrieve a word by its ID",
         "parameters": [
           {
             "name": "word_id",
@@ -136,16 +743,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "Word details",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Word"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Word"
                 }
               }
             }
@@ -156,7 +758,7 @@
         }
       },
       "put": {
-        "summary": "Update a word",
+        "summary": "Update an existing word",
         "parameters": [
           {
             "name": "word_id",
@@ -165,33 +767,27 @@
             "schema": {
               "type": "integer"
             }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WordInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Word updated successfully",
+          },
+          {
+            "name": "word",
+            "in": "body",
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Word"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/Word"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Word updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Word"
                 }
               }
             }
@@ -215,19 +811,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Word deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Word deleted"
           },
           "404": {
             "description": "Word not found"
@@ -238,6 +822,32 @@
   },
   "components": {
     "schemas": {
+      "StudyActivity": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "Word": {
         "type": "object",
         "properties": {
@@ -250,34 +860,54 @@
           "romaji": {
             "type": "string"
           },
-          "meaning": {
+          "english": {
             "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
           }
         }
       },
-      "WordInput": {
+      "StudySession": {
         "type": "object",
-        "required": ["kanji", "romaji", "meaning"],
         "properties": {
-          "kanji": {
-            "type": "string"
+          "id": {
+            "type": "integer"
           },
-          "romaji": {
-            "type": "string"
+          "group_id": {
+            "type": "integer"
           },
-          "meaning": {
-            "type": "string"
+          "study_activity_id": {
+            "type": "integer"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviews": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudyReview"
+            }
+          }
+        }
+      },
+      "StudyReview": {
+        "type": "object",
+        "properties": {
+          "study_session_id": {
+            "type": "integer"
+          },
+          "word_id": {
+            "type": "integer"
+          },
+          "correct": {
+            "type": "boolean"
           }
         }
       }
     }
   }
 }
+  

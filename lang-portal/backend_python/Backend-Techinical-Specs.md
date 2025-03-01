@@ -84,8 +84,7 @@ Return given study activity details.
 #### POST /api/study_activities
 POST study activities
 Request_params:- name, url
-#### GET /api/study_activities/:id/study_sessions
-Return all session related to study_activities
+
 
 ### Study Sessions Specifications
 #### GET /api/study_sessions

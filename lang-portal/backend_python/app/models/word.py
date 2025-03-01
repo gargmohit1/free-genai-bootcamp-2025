@@ -1,41 +1,22 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
+from .base import BaseModel
 
 @dataclass
-class Word:
-    id: Optional[int]
-    word: str
-    meaning: str
-    example: Optional[str] = None
-    created_at: Optional[datetime] = None
-
-    @classmethod
-    def from_dict(cls, data: dict) -> 'Word':
-        """Create a Word instance from a dictionary"""
-        return cls(
-            id=data.get('id'),
-            word=data['word'],
-            meaning=data['meaning'],
-            example=data.get('example'),
-            created_at=data.get('created_at')
-        )
-
-    def to_dict(self) -> dict:
-        """Convert Word instance to dictionary"""
-        return {
-            'id': self.id,
-            'word': self.word,
-            'meaning': self.meaning,
-            'example': self.example,
-            'created_at': self.created_at
-        }
-
+class Word(BaseModel):
+    """Word model representing a Japanese vocabulary word"""
+    kanji: str = field(default=None)
+    romaji: str = field(default=None)
+    english: str = field(default=None)
+    
     def validate(self) -> list[str]:
         """Validate word data"""
         errors = []
-        if not self.word:
-            errors.append("Word is required")
-        if not self.meaning:
-            errors.append("Meaning is required")
+        if not self.kanji:
+            errors.append("Kanji is required")
+        if not self.romaji:
+            errors.append("Romaji is required")
+        if not self.english:
+            errors.append("English is required")
         return errors

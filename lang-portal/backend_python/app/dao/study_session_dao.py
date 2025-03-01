@@ -1,6 +1,8 @@
 import sqlite3
 from typing import List, Dict, Optional, Tuple
 from datetime import datetime
+from ..models.study_session import StudySession, StudyReview
+from ..models.word import Word
 
 class StudySessionDAO:
     def __init__(self, db_path: str):
@@ -20,92 +22,83 @@ class StudySessionDAO:
             cursor.execute('SELECT COUNT(*) FROM study_sessions')
             total_count = cursor.fetchone()[0]
             
-            # Get paginated sessions with reviews
+            # Get paginated sessions
             cursor.execute('''
-                SELECT 
-                    s.id, s.group_id, s.study_activity_id, s.start_time, s.end_time, s.created_at,
-                    r.id as review_id, r.word_id, r.correct, r.reviewed_at, r.created_at as review_created_at
-                FROM study_sessions s
-                LEFT JOIN study_reviews r ON s.id = r.study_session_id
-                ORDER BY s.id DESC
+                SELECT id, group_id, study_activity_id, start_time, end_time, created_at
+                FROM study_sessions 
+                ORDER BY id 
                 LIMIT ? OFFSET ?
             ''', (per_page, offset))
             
-            sessions = {}
-            for row in cursor.fetchall():
-                session_id = row[0]
-                if session_id not in sessions:
-                    sessions[session_id] = {
-                        'id': row[0],
-                        'group_id': row[1],
-                        'study_activity_id': row[2],
-                        'start_time': row[3],
-                        'end_time': row[4],
-                        'created_at': row[5],
-                        'reviews': []
-                    }
-                
-                # Add review if it exists
-                if row[5]:  # if review_id is not None
-                    sessions[session_id]['reviews'].append({
-                        'id': row[5],
-                        'word_id': row[6],
-                        'correct': bool(row[7]),
-                        'reviewed_at': row[9],
-                        'created_at': row[10]
-                    })
+            sessions = [
+                StudySession(
+                    id=row[0],
+                    group_id=row[1],
+                    study_activity_id=row[2],
+                    start_time=datetime.fromisoformat(row[3]) if row[3] else None,
+                    end_time=datetime.fromisoformat(row[4]) if row[4] else None,
+                    created_at=datetime.fromisoformat(row[5]) if row[5] else None
+                ).to_dict()
+                for row in cursor.fetchall()
+            ]
             
-            return list(sessions.values()), total_count
+            return sessions, total_count
             
         finally:
             conn.close()
 
-    def get_study_session_by_id(self, session_id: int) -> Optional[Dict]:
+    def get_study_session_by_id(self, session_id: int, include_reviews: bool = False) -> Optional[Dict]:
         """Get a study session by its ID"""
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
-            
-            # Get session data
             cursor.execute('''
                 SELECT id, group_id, study_activity_id, start_time, end_time, created_at
                 FROM study_sessions 
                 WHERE id = ?
             ''', (session_id,))
             
-            session_row = cursor.fetchone()
-            if not session_row:
-                return None
+            row = cursor.fetchone()
+            if row:
+                session = StudySession(
+                    id=row[0],
+                    group_id=row[1],
+                    study_activity_id=row[2],
+                    start_time=datetime.fromisoformat(row[3]) if row[3] else None,
+                    end_time=datetime.fromisoformat(row[4]) if row[4] else None,
+                    created_at=datetime.fromisoformat(row[5]) if row[5] else None
+                )
                 
-            session = {
-                'id': session_row[0],
-                'group_id': session_row[1],
-                'study_activity_id': session_row[2],
-                'start_time': session_row[3],
-                'end_time': session_row[4],
-                'created_at': session_row[5],
-                'reviews': []
-            }
-            
-            # Get reviews for this session
-            cursor.execute('''
-                SELECT id, word_id, correct, reviewed_at, created_at
-                FROM study_reviews
-                WHERE study_session_id = ?
-            ''', (session_id,))
-            
-            session['reviews'] = [
-                {
-                    'id': row[0],
-                    'word_id': row[1],
-                    'correct': bool(row[2]),
-                    'reviewed_at': row[3],
-                    'created_at': row[4]
-                }
-                for row in cursor.fetchall()
-            ]
-            
-            return session
+                if include_reviews:
+                    cursor.execute('''
+                        SELECT sr.id, sr.word_id, sr.correct, sr.created_at,
+                               w.kanji, w.romaji, w.english, w.created_at, w.updated_at
+                        FROM study_reviews sr
+                        JOIN words w ON sr.word_id = w.id
+                        WHERE sr.study_session_id = ?
+                    ''', (session_id,))
+                    
+                    session.reviews = [
+                        StudyReview(
+                            id=row[0],
+                            study_session_id=session_id,
+                            word_id=row[1],
+                            correct=bool(row[2]),
+                            created_at=datetime.fromisoformat(row[3]) if row[3] else None,
+                            word=Word(
+                                id=row[1],
+                                kanji=row[4],
+                                romaji=row[5],
+                                english=row[6],
+                                created_at=datetime.fromisoformat(row[7]) if row[7] else None,
+                                updated_at=datetime.fromisoformat(row[8]) if row[8] else None
+                            )
+                        )
+                        for row in cursor.fetchall()
+                    ]
+                
+                return session.to_dict()
+            return None
             
         finally:
             conn.close()
@@ -115,10 +108,11 @@ class StudySessionDAO:
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
+            now = datetime.utcnow().isoformat()
             cursor.execute('''
-                INSERT INTO study_sessions (group_id, study_activity_id, start_time)
-                VALUES (?, ?, CURRENT_TIMESTAMP)
-            ''', (group_id, study_activity_id))
+                INSERT INTO study_sessions (group_id, study_activity_id, start_time, created_at)
+                VALUES (?, ?, ?, ?)
+            ''', (group_id, study_activity_id, now, now))
             
             session_id = cursor.lastrowid
             conn.commit()
@@ -133,11 +127,12 @@ class StudySessionDAO:
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
+            now = datetime.utcnow().isoformat()
             cursor.execute('''
                 UPDATE study_sessions 
-                SET end_time = CURRENT_TIMESTAMP
-                WHERE id = ? AND end_time IS NULL
-            ''', (session_id,))
+                SET end_time = ?
+                WHERE id = ?
+            ''', (now, session_id))
             
             if cursor.rowcount > 0:
                 conn.commit()
@@ -148,48 +143,26 @@ class StudySessionDAO:
             conn.close()
 
     def add_review(self, session_id: int, word_id: int, correct: bool) -> Optional[Dict]:
-        """Add a review to a study session"""
+        """Add a word review to a study session"""
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
-            
-            # First check if the session exists and is not ended
+            now = datetime.utcnow().isoformat()
             cursor.execute('''
-                SELECT 1 FROM study_sessions 
-                WHERE id = ? AND end_time IS NULL
-            ''', (session_id,))
-            
-            if not cursor.fetchone():
-                return None
-            
-            # Add the review
-            cursor.execute('''
-                INSERT INTO study_reviews (study_session_id, word_id, correct, reviewed_at)
-                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-            ''', (session_id, word_id, correct))
+                INSERT INTO study_reviews (study_session_id, word_id, correct, created_at)
+                VALUES (?, ?, ?, ?)
+            ''', (session_id, word_id, correct, now))
             
             review_id = cursor.lastrowid
             conn.commit()
             
-            # Get the created review
-            cursor.execute('''
-                SELECT id, word_id, correct, reviewed_at
-                FROM study_reviews
-                WHERE id = ?
-            ''', (review_id,))
-            
-            row = cursor.fetchone()
-            return {
-                'id': row[0],
-                'word_id': row[1],
-                'correct': bool(row[2]),
-                'reviewed_at': row[3]
-            }
+            # Return updated session with reviews
+            return self.get_study_session_by_id(session_id, include_reviews=True)
             
         finally:
             conn.close()
 
-    def get_session_stats(self, session_id: int) -> Dict:
+    def get_session_stats(self, session_id: int) -> Optional[Dict]:
         """Get statistics for a study session"""
         conn = self._get_connection()
         try:
@@ -197,39 +170,20 @@ class StudySessionDAO:
             cursor.execute('''
                 SELECT 
                     COUNT(*) as total_reviews,
-                    SUM(CASE WHEN correct = 1 THEN 1 ELSE 0 END) as correct_count
+                    SUM(CASE WHEN correct = 1 THEN 1 ELSE 0 END) as correct_reviews
                 FROM study_reviews
                 WHERE study_session_id = ?
             ''', (session_id,))
             
             row = cursor.fetchone()
-            total_reviews = row[0]
-            correct_count = row[1] or 0
-            
-            return {
-                'total_reviews': total_reviews,
-                'correct_count': correct_count,
-                'incorrect_count': total_reviews - correct_count,
-                'accuracy': (correct_count / total_reviews * 100) if total_reviews > 0 else 0
-            }
-            
-        finally:
-            conn.close()
-
-    def get_last_study_session(self) -> Optional[Dict]:
-        """Get the last study session"""
-        conn = self._get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT id FROM study_sessions 
-                ORDER BY start_time DESC 
-                LIMIT 1
-            ''')
-            
-            row = cursor.fetchone()
             if row:
-                return self.get_study_session_by_id(row[0])
+                total_reviews = row[0]
+                correct_reviews = row[1] or 0
+                return {
+                    'total_reviews': total_reviews,
+                    'correct_reviews': correct_reviews,
+                    'accuracy': (correct_reviews / total_reviews * 100) if total_reviews > 0 else 0
+                }
             return None
             
         finally:
@@ -241,21 +195,20 @@ class StudySessionDAO:
         try:
             cursor = conn.cursor()
             
-            # Get total words and studied words
-            cursor.execute('''
-                SELECT 
-                    (SELECT COUNT(*) FROM words) as total_words,
-                    (SELECT COUNT(DISTINCT word_id) FROM study_reviews) as studied_words
-            ''')
+            # Get total words
+            cursor.execute('SELECT COUNT(*) FROM words')
+            total_words = cursor.fetchone()[0]
             
-            row = cursor.fetchone()
-            total_words = row[0]
-            studied_words = row[1]
+            # Get studied words (words that have been reviewed at least once)
+            cursor.execute('''
+                SELECT COUNT(DISTINCT word_id) 
+                FROM study_reviews
+            ''')
+            studied_words = cursor.fetchone()[0]
             
             return {
                 'total_words': total_words,
                 'studied_words': studied_words,
-                'remaining_words': total_words - studied_words,
                 'progress_percentage': (studied_words / total_words * 100) if total_words > 0 else 0
             }
             
@@ -263,34 +216,47 @@ class StudySessionDAO:
             conn.close()
 
     def get_quick_stats(self) -> Dict:
-        """Get quick statistics about study sessions"""
+        """Get quick overview statistics"""
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
             
-            # Get various stats
+            # Get success rate
             cursor.execute('''
                 SELECT 
-                    (SELECT COUNT(*) FROM study_sessions) as total_sessions,
-                    (SELECT COUNT(*) FROM groups WHERE id IN (
-                        SELECT DISTINCT group_id FROM study_sessions
-                    )) as active_groups,
-                    (SELECT COUNT(*) FROM study_reviews) as total_reviews,
-                    (SELECT COUNT(*) FROM study_reviews WHERE correct = 1) as correct_reviews
+                    COUNT(*) as total_reviews,
+                    SUM(CASE WHEN correct = 1 THEN 1 ELSE 0 END) as correct_reviews
+                FROM study_reviews
             ''')
-            
             row = cursor.fetchone()
-            total_sessions = row[0]
-            active_groups = row[1]
-            total_reviews = row[2]
-            correct_reviews = row[3]
+            total_reviews = row[0]
+            correct_reviews = row[1] or 0
+            success_rate = (correct_reviews / total_reviews * 100) if total_reviews > 0 else 0
+            
+            # Get active groups count
+            cursor.execute('SELECT COUNT(*) FROM groups')
+            active_groups = cursor.fetchone()[0]
+            
+            # Get total sessions
+            cursor.execute('SELECT COUNT(*) FROM study_sessions')
+            total_sessions = cursor.fetchone()[0]
             
             return {
-                'total_sessions': total_sessions,
+                'success_rate': success_rate,
                 'active_groups': active_groups,
-                'success_rate': (correct_reviews / total_reviews * 100) if total_reviews > 0 else 0,
-                'total_reviews': total_reviews
+                'total_sessions': total_sessions
             }
             
+        finally:
+            conn.close()
+
+    def get_all_study_sessions(self) -> List[StudySession]:
+        """Retrieve all study sessions."""
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM study_sessions')
+            rows = cursor.fetchall()
+            return [StudySession(id=row[0], group_id=row[1], study_activity_id=row[2], start_time=row[3]) for row in rows]
         finally:
             conn.close()
